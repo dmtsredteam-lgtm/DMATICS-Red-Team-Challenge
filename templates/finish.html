@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="wrap">
+  <div class="card center reveal">
+    {% if busted %}
+      <div class="tag" style="color:var(--neon)">Caught by the SOC</div>
+      <h1 class="glitch" style="margin:8px 0">🚨 Run Terminated</h1>
+      <div class="warn" style="text-align:left">🚨 <b>{{ bust_reason }}</b><br>
+        The blue team ended your session. Your score up to this point has been recorded on the leaderboard.</div>
+    {% elif done %}
+      <div class="tag">Operation Complete</div>
+      <h1 class="glitch" style="margin:8px 0">🏆 Full Compromise!</h1>
+    {% else %}
+      <div class="tag">Time / Session Ended</div>
+      <h1 style="margin:8px 0">Debrief</h1>
+    {% endif %}
+    <div class="big">{{ p.points }}<span style="font-size:22px;color:var(--muted)"> / 100 pts</span></div>
+    <p class="muted">Flags captured: <b style="color:var(--neon)">{{ p.captured|length }}/{{ total }}</b>
+       &nbsp;•&nbsp; Time: <b>{{ '%02d:%02d'|format(elapsed//60, elapsed%60) }}</b></p>
+    {% include "_flags.html" %}
+    <div style="margin-top:18px">
+      <a class="btn" href="{{ url_for('leaderboard') }}">See Leaderboard ▸</a>
+      <a class="btn ghost" href="{{ url_for('index') }}">New Operator ▸</a>
+    </div>
+    <hr style="border:none;border-top:1px solid var(--line);margin:24px 0 16px">
+    <img class="mk-logo" src="{{ url_for('static', filename='img/dmatics-white.png') }}" alt="DMATICS IT Solutions LLC">
+    <p class="muted" style="margin-top:8px">Want the real thing — full Red Team &amp; Adversary Simulation engagements?<br>
+    <b>DMATICS Offensive Security</b> — Dubai, UAE • info@dmaticsonline.com • Let's Build!</p>
+  </div>
+</div>
+{% endblock %}
+{% block script %}
+{% if busted %}<script>if(window.DMFX) setTimeout(function(){DMFX.sfx('error');},300);</script>
+{% elif done %}<script>if(window.DMFX) setTimeout(function(){DMFX.sfx('flag');},300);</script>{% endif %}
+{% endblock %}

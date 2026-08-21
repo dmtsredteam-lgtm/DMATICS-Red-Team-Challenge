@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="wrap">
+  <div class="card reveal">
+    <div class="tag">Employee Directory</div>
+    <h2 style="margin:6px 0 14px">{{ target_org }} — Staff</h2>
+    <!-- DEV NOTE: remove seed accounts before go-live. Default onboarding pwd = Season+Year (e.g. Summer2026) -->
+    <!-- {{ flag1 }} -->
+    <table>
+      <tr><th>Name</th><th>Username</th><th>Department</th><th>Email</th></tr>
+      <tr><td>John Smith</td><td>{{ valid_user }}</td><td>Finance</td><td>john.smith@aegisvault.io</td></tr>
+      <tr><td>Sara Ali</td><td>sara.ali</td><td>HR</td><td>sara.ali@aegisvault.io</td></tr>
+      <tr><td>Mohit Rao</td><td>mohit.rao</td><td>IT</td><td>mohit.rao@aegisvault.io</td></tr>
+      <tr><td>Backup Service</td><td>svc_backup</td><td>System</td><td>—</td></tr>
+    </table>
+    <p class="note" style="margin-top:16px">The flag for this stage is hidden in the <b>HTML source</b> of this page. Right-click → <b>View Page Source</b>, grab the flag from the comment, and submit it on Mission Control to unlock Stage 2. Also note the onboarding password hint 👀</p>
+    <p><a href="{{ url_for('brief') }}">◂ Mission Control</a></p>
+  </div>
+</div>
+{% endblock %}

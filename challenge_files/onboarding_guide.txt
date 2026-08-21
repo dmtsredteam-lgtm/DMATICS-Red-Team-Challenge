@@ -1,0 +1,6 @@
+Aegis Vault Systems - New Joiner Onboarding
+-------------------------------------------
+1. Your username is firstname.lastname
+2. Default password = <Season><Year>, e.g. Summer2026
+3. Please change it on first login (most people don't...).
+4. Shared drive: \\aegis-fs01\Shared

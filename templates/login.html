@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="wrap">
+  <div class="card reveal" style="max-width:460px;margin:0 auto">
+    <div class="tag">Staff Login</div>
+    <h2 style="margin:6px 0 14px">{{ target_org }} Intranet</h2>
+
+    {% if flag2 %}
+      <div class="win"><b>✓ Access granted.</b> Session hijacked as <b>john.smith</b>.</div>
+      <div class="loot">
+        <span class="lbl">FLAG-2 recovered</span>
+        <code>{{ flag2 }}</code>
+      </div>
+      <p class="note" style="margin-top:12px">Copy FLAG-2, head back to <a href="{{ url_for('brief') }}">Mission Control</a>, submit it — that unlocks <b>Stage 3 · Lateral Movement</b>.</p>
+      <p style="margin-top:12px"><a class="btn" href="{{ url_for('brief') }}">◂ Back to Mission Control</a></p>
+    {% else %}
+      <form method="post">
+        <div class="field"><label>Username</label><input name="username" value="{{ hint_user }}" autofocus></div>
+        <div class="field"><label>Password</label><input name="password" type="password" placeholder="••••••••"></div>
+        <button class="btn" style="width:100%">Sign in</button>
+        {% if error %}<p class="err">{{ error }}</p>{% endif %}
+      </form>
+      <p class="warn" style="margin-top:14px">⚠️ <b>Heads up:</b> this portal has brute-force detection. You get <b>{{ login_max }}</b> attempts total — after that the SOC locks the account and your run ends. Attempts remaining: <span class="attempts">{{ attempts_left }}</span></p>
+      <p class="note" style="margin-top:12px">🔓 <b>Hint:</b> The onboarding password follows the pattern <b>Season + Year</b>. It's currently summer. Try it.</p>
+      <p><a href="{{ url_for('brief') }}">◂ Mission Control</a></p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+{% block script %}
+{% if soc %}
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  showSOCAlert({{ soc.title|tojson }}, {{ soc.msg|tojson }}, '{{ url_for("finish") }}');
+});
+</script>
+{% elif flag2 %}
+<script>if(window.DMFX) setTimeout(function(){DMFX.sfx('login');},200);</script>
+{% elif error %}
+<script>if(window.DMFX) DMFX.sfx('error');</script>
+{% endif %}
+{% endblock %}

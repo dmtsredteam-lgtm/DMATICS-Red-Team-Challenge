@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="wrap">
+  <div class="card reveal">
+    <div class="tag">{{ target_org }} — Public Portal</div>
+    <h1 class="glitch" style="margin:6px 0">Welcome to the {{ target_org }} Intranet</h1>
+    <p class="muted">Enterprise-grade security you can trust. Internal staff resources below.</p>
+    <div class="grid" style="margin-top:16px">
+      <a class="stage" href="{{ url_for('directory') }}"><div class="num">👥</div><div><b>Employee Directory</b><br><span class="muted">Find colleagues &amp; contact info</span></div></a>
+      <div class="stage"><div class="num">📰</div><div><b>Company News</b><br><span class="muted">GISEC 2026 — come find the DMATICS red team!</span></div></div>
+      <div class="stage"><div class="num">📞</div><div><b>Contact Us</b><br><span class="muted">support@aegisvault.io · +971 4 000 0000</span></div></div>
+    </div>
+    <p class="note" style="margin-top:16px">🕵️ <b>Recon tip:</b> Public pages leak more than intended. Dump the source of the directory (right-click → View Source), grab FLAG-1, and submit it on Mission Control to unlock Stage 2.</p>
+    <p><a href="{{ url_for('brief') }}">◂ Back to Mission Control</a></p>
+  </div>
+</div>
+{% endblock %}

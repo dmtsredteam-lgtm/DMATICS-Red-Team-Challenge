@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="wrap">
+  <div class="card reveal">
+    <div class="tag">{{ target_fs }}</div>
+    <h2 style="margin:6px 0 14px">Shared Documents</h2>
+    <table>
+      <tr><th>Name</th><th>Type</th><th>Size</th><th></th></tr>
+      <tr><td>Q3_financials.csv</td><td>Spreadsheet</td><td>18 KB</td><td><a href="{{ url_for('files', fname='Q3_financials.csv') }}" target="_blank">Open</a></td></tr>
+      <tr><td>onboarding_guide.txt</td><td>Text</td><td>2 KB</td><td><a href="{{ url_for('files', fname='onboarding_guide.txt') }}" target="_blank">Open</a></td></tr>
+      <tr><td>passwords.txt</td><td>Text</td><td>1 KB</td><td><a href="{{ url_for('files', fname='passwords.txt') }}" target="_blank">Open</a></td></tr>
+    </table>
+    <p class="note" style="margin-top:16px">💾 Crack open <b>passwords.txt</b> — it holds <b>FLAG-3</b> (submit it on Mission Control to unlock Stage 4) and the <b>svc_backup</b> creds you'll need for the Web Console.</p>
+    <p><a href="{{ url_for('dashboard') }}">◂ Dashboard</a> &nbsp;•&nbsp; <a href="{{ url_for('brief') }}">Mission Control</a></p>
+  </div>
+</div>
+{% endblock %}

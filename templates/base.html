@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ title }}{% block ttl %}{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<script>window.__EVENT__ = "{{ event }}";</script>
+</head>
+<body>
+<canvas id="dm-matrix"></canvas>
+
+<div class="nav">
+  <img class="nav-logo" src="{{ url_for('static', filename='img/dmatics-white.png') }}" alt="DMATICS">
+  <div class="brand glitch"><small>RED TEAM OPS</small></div>
+  <div class="spacer"></div>
+  {% if p and p.player %}
+  <div class="pill">Operator&nbsp;<b>{{ p.player }}</b></div>
+  <div class="pill">Score&nbsp;<b id="score">{{ p.points }}</b></div>
+  <a class="pill" href="{{ url_for('brief') }}">Mission</a>
+  {% endif %}
+  <a class="pill" href="{{ url_for('leaderboard') }}">Leaderboard</a>
+</div>
+
+{% block body %}{% endblock %}
+
+<script src="{{ url_for('static', filename='js/matrix-bg.js') }}"></script>
+<script src="{{ url_for('static', filename='js/sound.js') }}"></script>
+<script src="{{ url_for('static', filename='js/soc.js') }}"></script>
+<script src="{{ url_for('static', filename='js/win.js') }}"></script>
+<script src="{{ url_for('static', filename='js/fx.js') }}"></script>
+{% block script %}{% endblock %}
+</body>
+</html>

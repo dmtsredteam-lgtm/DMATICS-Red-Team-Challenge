@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ title }} — Leaderboard</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<canvas id="dm-matrix"></canvas>
+
+<div class="nav">
+  <img class="nav-logo" src="{{ url_for('static', filename='img/dmatics-white.png') }}" alt="DMATICS">
+  <div class="brand glitch"><small>RED TEAM OPS</small></div>
+  <div class="spacer"></div>
+  <a class="pill" href="{{ url_for('index') }}">Play ▸</a>
+</div>
+<div class="lb">
+  <img class="lb-logo" src="{{ url_for('static', filename='img/dmatics-white.png') }}" alt="DMATICS IT Solutions LLC">
+  <div class="tag center" style="letter-spacing:3px">{{ event }} — Live Arena</div>
+  <h1 class="glitch">🏴 Red Team Leaderboard</h1>
+  <div class="sub">Top operators — ✓ = full clear · others got caught or ran out of time · auto-refreshes every 5s</div>
+  <div class="card">
+    <table>
+      <thead><tr><th>#</th><th>Operator</th><th>Flags</th><th>Time</th><th style="text-align:right">Points</th></tr></thead>
+      <tbody id="rows"><tr><td colspan="5" class="muted center">Waiting for the first breach…</td></tr></tbody>
+    </table>
+  </div>
+  <div class="lb-footer">
+    <img src="{{ url_for('static', filename='img/dmatics-white.png') }}" alt="DMATICS">
+    <span class="muted">DMATICS IT Solutions LLC • Dubai, UAE • Let's Build!</span>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/matrix-bg.js') }}"></script>
+<script src="{{ url_for('static', filename='js/sound.js') }}"></script>
+<script>
+async function load(){
+  const r = await fetch('{{ url_for("leaderboard_data") }}');
+  const d = await r.json();
+  const tb = document.getElementById('rows');
+  if(!d.length){ tb.innerHTML='<tr><td colspan="5" class="muted center">Waiting for the first breach…</td></tr>'; return; }
+  tb.innerHTML = d.map(x=>`
+    <tr class="${x.rank===1?'top1':''}">
+      <td class="rank">${x.rank===1?'👑':x.rank}</td>
+      <td>${x.player} ${x.finished?'<span style="color:var(--neon)">✓</span>':''}</td>
+      <td>${x.flags}/5</td>
+      <td class="mono">${x.time}</td>
+      <td class="pts">${x.points}</td>
+    </tr>`).join('');
+}
+load(); setInterval(load,5000);
+</script>
+</body>
+</html>

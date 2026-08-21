@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="hero reveal">
+  <img class="hero-logo" src="{{ url_for('static', filename='img/dmatics-white.png') }}" alt="DMATICS IT Solutions">
+  <div class="tag">{{ event }} &nbsp;•&nbsp; Live Red Team Arena</div>
+  <h1 class="glitch" data-decrypt>{{ title }}</h1>
+  <p>Can you breach the target before the blue team burns your access? You've got <b>10 minutes</b>, 5 stages and 100 points on the table — but the SOC is watching, so tread carefully.</p>
+</div>
+<div class="wrap">
+  <div class="card reveal" style="max-width:460px;margin:0 auto">
+    <h3 style="margin-top:0">// Enter the Arena</h3>
+    <form method="post">
+      <div class="field">
+        <label>Your hacker handle</label>
+        <input name="player" placeholder="e.g. gh0st" maxlength="24" autofocus required>
+      </div>
+      <button class="btn" style="width:100%">Start the Clock ▸</button>
+    </form>
+    {% with m = get_flashed_messages() %}{% if m %}<p class="err">{{ m[0] }}</p>{% endif %}{% endwith %}
+    <p class="muted" style="margin-bottom:0;font-size:13px">By starting you agree this is a simulated, sandboxed lab. No real systems are touched. — DMATICS IT Solutions LLC, Dubai.</p>
+  </div>
+</div>
+{% endblock %}

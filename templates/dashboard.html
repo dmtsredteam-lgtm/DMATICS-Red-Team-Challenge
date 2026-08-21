@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="wrap">
+  <div class="card reveal">
+    <div class="tag">Stage 3 · Lateral Movement</div>
+    <h2 style="margin:6px 0 14px">Employee Dashboard</h2>
+    <div class="grid">
+      <a class="stage" href="{{ url_for('share') }}"><div class="num">📁</div><div><b>Shared Documents</b><br><span class="muted">Team file share (SMB mirror) — FLAG-3 is in here</span></div></a>
+      <a class="stage" href="{{ url_for('console') }}"><div class="num">🖥️</div><div><b>Web Console</b><br><span class="muted">{{ target_host }} remote access — unlocks with FLAG-3</span></div></a>
+      <div class="stage"><div class="num">💬</div><div><b>Messages</b><br><span class="muted">No new messages</span></div></div>
+    </div>
+    <p class="note" style="margin-top:16px">Pivot: open <b>Shared Documents</b> → <b>passwords.txt</b> for FLAG-3 and the <b>svc_backup</b> creds. Submit FLAG-3 on Mission Control to unlock the Web Console (Stage 4).</p>
+    <p><a href="{{ url_for('brief') }}">◂ Mission Control</a></p>
+  </div>
+</div>
+{% endblock %}

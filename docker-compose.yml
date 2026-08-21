@@ -1,0 +1,15 @@
+services:
+  dmatics-redteam:
+    build: .
+    container_name: dmatics-redteam
+    ports:
+      - "8000:8000"          # players + leaderboard  ->  http://<booth-host>:8000
+    environment:
+      # CHANGE THIS before the show. Any long random string. If you don't set it,
+      # the two gunicorn workers pick different keys and sessions break.
+      - SECRET_KEY=change-me-before-gisec-2026
+      - DB_PATH=/app/data/leaderboard.db
+      - GAME_SECONDS=600     # length of a run in seconds (10 min)
+    volumes:
+      - ./data:/app/data      # keeps the leaderboard across restarts
+    restart: unless-stopped

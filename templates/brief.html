@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="wrap">
+  <div class="hero reveal" style="padding:24px 0 8px">
+    <div class="tag">Mission Control</div>
+    <h1 class="glitch" style="font-size:32px">Operation: Breach {{ target_org }}</h1>
+    <p>Countdown: <b id="clock" style="color:var(--neon)">10:00</b></p>
+  </div>
+
+  {% with msgs = get_flashed_messages() %}
+    {% if msgs %}<div class="card reveal" style="padding:14px 18px"><p class="warn" style="margin:0">{{ msgs[0] }}</p></div>{% endif %}
+  {% endwith %}
+
+  {% include "_flags.html" %}
+
+  <div class="card reveal">
+    <p class="muted" style="margin:0 0 14px">Work the kill-chain <b>in order</b> — each stage unlocks only when you submit the previous flag. Jump straight into any unlocked stage from here.</p>
+    <div class="grid">
+      {% for s in stages %}
+      <div class="stage {% if s.done %}done{% elif not s.unlocked %}locked{% endif %}">
+        <div class="num">{% if s.done %}✓{% elif not s.unlocked %}🔒{% else %}{{ s.n }}{% endif %}</div>
+        <div>
+          <b>{{ s.name }}</b><br>
+          <span class="muted">{{ s.desc }}</span>
+          <div style="margin-top:8px">
+            {% if s.unlocked %}
+              <a class="btn ghost" href="{{ s.url }}">{% if s.done %}Revisit{% else %}Enter{% endif %} ▸</a>
+            {% else %}
+              <span class="pill">🔒 Submit {{ s.requires }} to unlock</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="card reveal">
+    <h3 style="margin-top:0">// Submit a flag</h3>
+    <p class="muted" style="margin-top:0">Find each flag out in the target, then <b>paste it here to score and unlock the next stage</b>.</p>
+    <div style="display:flex;gap:10px">
+      <input id="flag" placeholder="DMATICS{...}">
+      <button class="btn" onclick="submitFlag()">Submit</button>
+    </div>
+    <p id="msg" class="muted" style="margin-bottom:0"></p>
+  </div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+let left = {{ left }};
+let ended = false;
+function tick(){
+  let m = String(Math.floor(Math.max(0,left)/60)).padStart(2,'0');
+  let s = String(Math.max(0,left)%60).padStart(2,'0');
+  const c = document.getElementById('clock');
+  if(c){ c.textContent = m+':'+s;
+    if(left<=60) c.style.color = 'var(--red)';
+  }
+  if(left<=0 && !ended){
+    ended = true;
+    if(c){ c.textContent='00:00'; c.style.color='var(--red)'; }
+    // Clock ran out -> end the run and record whatever they've got.
+    window.location = '{{ url_for("finish") }}';
+    return;
+  }
+  if(left>0) left--;
+}
+setInterval(tick,1000); tick();
+
+async function submitFlag(){
+  const v = document.getElementById('flag').value.trim();
+  const r = await fetch('{{ url_for("submit") }}',{method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:'flag='+encodeURIComponent(v)});
+  const j = await r.json();
+  const msg = document.getElementById('msg');
+  if(j.ok && j.newly){
+    document.getElementById('score').textContent = j.points;
+    if(j.done){
+      // Full compromise! Fire the victory takeover (score already recorded).
+      msg.style.color='var(--neon)'; msg.textContent='✓ '+j.flag+' captured — full compromise!';
+      window.__TARGET__ = "{{ target_host }}";
+      showWinAlert(j.points, j.elapsed, '{{ url_for("finish") }}');
+    } else {
+      msg.style.color='var(--neon)';
+      msg.textContent='✓ '+j.flag+' captured! → total '+j.points+'  · next stage unlocked';
+      if(window.DMFX) DMFX.sfx('flag');
+      setTimeout(()=>location.reload(),900);   // refresh so the new stage unlocks
+    }
+  } else if(j.ok && j.already){
+    msg.style.color='var(--muted)'; msg.textContent=j.flag+' already captured.';
+    if(window.DMFX) DMFX.sfx('click');
+  } else {
+    msg.style.color='var(--red)'; msg.textContent='✗ '+(j.msg||'Not a valid flag.');
+    if(window.DMFX) DMFX.sfx('error');
+  }
+}
+</script>
+{% endblock %}

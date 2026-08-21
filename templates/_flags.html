@@ -1,0 +1,5 @@
+<div class="flagbar">
+  {% for f in ['FLAG-1','FLAG-2','FLAG-3','FLAG-4','FLAG-5'] %}
+    <span class="chip {% if f in p.captured %}on{% endif %}">{{ f }} {% if f in p.captured %}✓{% endif %}</span>
+  {% endfor %}
+</div>

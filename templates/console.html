@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="wrap">
+  <div class="card reveal {% if authed %}hidden{% endif %}" id="authcard">
+    <div class="tag">Remote Access — {{ target_host }}</div>
+    <h2 style="margin:6px 0 14px">SSH Web Console</h2>
+    <div class="field"><label>Username</label><input id="cu" value="{{ svc_user }}"></div>
+    <div class="field"><label>Password</label><input id="cp" type="password" placeholder="from passwords.txt"></div>
+    <button class="btn" onclick="auth()">Connect</button>
+    <p id="autherr" class="err"></p>
+    <p class="warn" style="margin-top:14px">⚠️ <b>Heads up:</b> SSH here is monitored. You get <b>{{ ssh_max }}</b> attempts — after that it's flagged as an SSH brute-force and your run ends. Attempts remaining: <span class="attempts" id="sshleft">{{ attempts_left }}</span></p>
+    <p class="note">Use the <b>svc_backup</b> creds you looted from <b>passwords.txt</b> on the share.</p>
+  </div>
+
+  <div class="card {% if not authed %}hidden{% endif %}" id="shellcard">
+    <div class="term">
+      <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i>
+        &nbsp; svc_backup@{{ target_host }}: ~</div>
+      <div class="out" id="out">Connected to {{ target_host }} (10.10.20.15)
+Last login: {{ event }} booth session
+
+Type <b>help</b> for available commands. Try: whoami, ls -la, cat flag.txt, sudo -l, find / -name '*secret*'
+</div>
+      <div class="in"><span>$</span><input id="cmd" autocomplete="off" autofocus
+           onkeydown="if(event.key==='Enter')run()"></div>
+    </div>
+    <p class="note" style="margin-top:14px">🎯 <b>Stage 4:</b> <span class="mono">cat flag.txt</span> reveals FLAG-4. Then hunt the vault with <span class="mono">find / -name '*secret*'</span> and <span class="mono">cat</span> it for FLAG-5. Copy each flag and submit it back on <b>Mission Control</b> to score. ⚠️ <span class="mono">sudo</span> escalation trips the EDR and ends your run.</p>
+    <p style="margin-top:12px"><a href="{{ url_for('brief') }}">◂ Mission Control</a></p>
+  </div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+async function auth(){
+  const u=document.getElementById('cu').value, p=document.getElementById('cp').value;
+  const r=await fetch('{{ url_for("console_auth") }}',{method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:'username='+encodeURIComponent(u)+'&password='+encodeURIComponent(p)});
+  const j=await r.json();
+  if(j.ok){document.getElementById('authcard').classList.add('hidden');
+    document.getElementById('shellcard').classList.remove('hidden');
+    document.getElementById('cmd').focus();
+    if(window.DMFX) DMFX.sfx('login');
+    return;}
+  if(j.busted){ showSOCAlert(j.title, j.reason, '{{ url_for("finish") }}'); return; }
+  document.getElementById('autherr').textContent='✗ '+j.msg;
+  if(typeof j.attempts!=='undefined'){ document.getElementById('sshleft').textContent=j.attempts; }
+  if(window.DMFX) DMFX.sfx('error');
+}
+
+async function run(){
+  const box=document.getElementById('cmd'); const cmd=box.value; box.value='';
+  const out=document.getElementById('out');
+  out.innerHTML += '\n<span style="color:var(--neon)">$ '+cmd+'</span>\n';
+  const r=await fetch('{{ url_for("console_exec") }}',{method:'POST',
+      headers:{'Content-Type':'application/json'},body:JSON.stringify({cmd})});
+  const j=await r.json();
+  out.innerHTML += (j.out||'')+'\n';
+  out.scrollTop = out.scrollHeight;
+  if(j.busted){ showSOCAlert(j.title, j.reason, '{{ url_for("finish") }}'); return; }
+  if(window.DMFX){ DMFX.sfx((j.out||'').indexOf('DMATICS{')>-1 ? 'flag' : 'success'); }
+}
+</script>
+{% endblock %}
